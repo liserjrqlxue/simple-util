@@ -2,7 +2,7 @@ package simple_util
 
 import "log"
 
-func checkErr(err error) {
+func CheckErr(err error) {
 	if err != nil {
 		//panic(err)
 		log.Fatal(err)
@@ -13,7 +13,7 @@ type handle interface {
 	Close() error
 }
 
-func deferClose(h handle) {
+func DeferClose(h handle) {
 	err := h.Close()
-	checkErr(err)
+	CheckErr(err)
 }
