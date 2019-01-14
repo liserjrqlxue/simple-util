@@ -43,7 +43,7 @@ func File2Slice(path, sep string) [][]string {
 }
 
 // reads file to []map[string]string
-func File2MapArray(path, sep string) []map[string]string {
+func File2MapArray(path, sep string) ([]map[string]string, []string) {
 	file, err := os.Open(path)
 	CheckErr(err)
 	defer DeferClose(file)
@@ -67,7 +67,7 @@ func File2MapArray(path, sep string) []map[string]string {
 		i++
 	}
 	CheckErr(scanner.Err())
-	return mapArray
+	return mapArray, title
 }
 
 // reads file to []map[string]string
