@@ -11,5 +11,7 @@ func RunCmd(name string, args ...string) {
 	c.Stderr = os.Stderr
 	c.Stdout = os.Stdout
 	err := c.Run()
-	fmt.Println(err)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
