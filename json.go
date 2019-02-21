@@ -10,7 +10,7 @@ func Json2file(json []byte, filenName string) error {
 	if err != nil {
 		return err
 	}
-	DeferClose(file)
+	defer DeferClose(file)
 
 	c, err := file.Write(json)
 	if err != nil {

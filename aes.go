@@ -9,6 +9,7 @@ import (
 func Encode2file(fileName string, data, codeKey []byte) {
 	file, err := os.Create(fileName)
 	CheckErr(err)
+	defer DeferClose(file)
 	c := Encode2File(file, data, codeKey)
 	fmt.Printf("write %d byte to %s\n", c, fileName)
 }
