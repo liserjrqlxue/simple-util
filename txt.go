@@ -50,3 +50,14 @@ func File2MapMap(fileName, key, sep string) map[string]map[string]string {
 	scanner := bufio.NewScanner(file)
 	return Scanner2MapMap(scanner, key, sep)
 }
+
+// reads file to map[string]map[string]string
+func File2MapMapMerge(fileName, key, sep, merge string) map[string]map[string]string {
+	file, err := os.Open(fileName)
+	CheckErr(err)
+	defer DeferClose(file)
+
+	scanner := bufio.NewScanner(file)
+	_, d := Slice2MapMapMerge(Scanner2Slice(scanner, sep), key, merge)
+	return d
+}

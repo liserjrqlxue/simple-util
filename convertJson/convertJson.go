@@ -22,8 +22,12 @@ var (
 	sep = flag.String(
 		"sep",
 		"\t",
-		"split column for tsv or merge sep for xlsx",
+		"split column",
 	)
+	merge = flag.String(
+		"merge",
+		"\n",
+		"merge element")
 	key = flag.String(
 		"key",
 		"",
@@ -85,7 +89,7 @@ func main() {
 		case "MapArray":
 			i, _ = simple_util.File2MapArray(*input, *sep, nil)
 		case "MapMap":
-			i = simple_util.File2MapMap(*input, *key, *sep)
+			i = simple_util.File2MapMapMerge(*input, *key, *sep, *merge)
 		default:
 			flag.Usage()
 			fmt.Println("-struct error for tsv")
@@ -99,7 +103,7 @@ func main() {
 		case "MapArray":
 			i, _ = simple_util.Sheet2MapArray(*input, *sheet)
 		case "MapMap":
-			_, i = simple_util.Sheet2MapMapMerge(*input, *sheet, *key, *sep)
+			_, i = simple_util.Sheet2MapMapMerge(*input, *sheet, *key, *merge)
 		default:
 			flag.Usage()
 			fmt.Println("-struct error for xlsx")
