@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"compress/gzip"
 	"os"
+	"regexp"
 )
 
 func Gz2Array(fileName string) []string {
@@ -32,7 +33,7 @@ func Gz2Slice(fileName, sep string) [][]string {
 	return Scanner2Slice(scanner, sep)
 }
 
-func Gz2MapArray(fileName, sep string) ([]map[string]string, []string) {
+func Gz2MapArray(fileName, sep string, skip *regexp.Regexp) ([]map[string]string, []string) {
 	file, err := os.Open(fileName)
 	CheckErr(err)
 	defer DeferClose(file)
@@ -42,7 +43,7 @@ func Gz2MapArray(fileName, sep string) ([]map[string]string, []string) {
 	defer DeferClose(gr)
 
 	scanner := bufio.NewScanner(gr)
-	return Scanner2MapArray(scanner, sep)
+	return Scanner2MapArray(scanner, sep, skip)
 }
 
 func Gz2MapMap(fileName, key, sep string) map[string]map[string]string {

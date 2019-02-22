@@ -3,6 +3,7 @@ package simple_util
 import (
 	"bufio"
 	"os"
+	"regexp"
 )
 
 type MapDb struct {
@@ -31,13 +32,13 @@ func File2Slice(fileName, sep string) [][]string {
 }
 
 // reads file to []map[string]string
-func File2MapArray(fileName, sep string) ([]map[string]string, []string) {
+func File2MapArray(fileName, sep string, skip *regexp.Regexp) ([]map[string]string, []string) {
 	file, err := os.Open(fileName)
 	CheckErr(err)
 	defer DeferClose(file)
 
 	scanner := bufio.NewScanner(file)
-	return Scanner2MapArray(scanner, sep)
+	return Scanner2MapArray(scanner, sep, skip)
 }
 
 // reads file to map[string]map[string]string

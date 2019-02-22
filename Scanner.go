@@ -2,6 +2,7 @@ package simple_util
 
 import (
 	"bufio"
+	"regexp"
 	"strings"
 )
 
@@ -25,12 +26,15 @@ func Scanner2Slice(scanner *bufio.Scanner, sep string) [][]string {
 	return slice
 }
 
-func Scanner2MapArray(scanner *bufio.Scanner, sep string) ([]map[string]string, []string) {
+func Scanner2MapArray(scanner *bufio.Scanner, sep string, skip *regexp.Regexp) ([]map[string]string, []string) {
 	var mapArray []map[string]string
 	var title []string
 	var i = 0
 	for scanner.Scan() {
 		line := scanner.Text()
+		if skip != nil && skip.MatchString(line) {
+			continue
+		}
 		array := strings.Split(line, sep)
 		if i == 0 {
 			title = array
