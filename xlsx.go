@@ -7,7 +7,7 @@ func Sheet2MapArray(excelFile, sheetName string) ([]string, []map[string]string)
 	CheckErr(err)
 	rows := xlsxFh.GetRows(sheetName)
 
-	return ArrayArray2MapArray(rows)
+	return Slice2MapArray(rows)
 }
 
 func Sheet2MapMap(excelFile, sheetName, key string) ([]string, map[string]map[string]string) {
@@ -15,7 +15,7 @@ func Sheet2MapMap(excelFile, sheetName, key string) ([]string, map[string]map[st
 	CheckErr(err)
 	rows := xlsxFh.GetRows(sheetName)
 
-	return ArrayArray2MapMap(rows, key)
+	return Slice2MapMap(rows, key)
 }
 
 func Sheet2MapMapMerge(excelFile, sheetName, key, sep string) ([]string, map[string]map[string]string) {
@@ -24,5 +24,5 @@ func Sheet2MapMapMerge(excelFile, sheetName, key, sep string) ([]string, map[str
 	CheckErr(err)
 	rows := xlsxFh.GetRows(sheetName)
 
-	return ArrayArray2MapMapMerge(rows, key, sep)
+	return Slice2MapMapMerge(rows, key, sep)
 }

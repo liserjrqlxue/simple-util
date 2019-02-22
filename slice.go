@@ -1,6 +1,6 @@
 package simple_util
 
-func ArrayArray2MapArray(slice [][]string) ([]string, []map[string]string) {
+func Slice2MapArray(slice [][]string) ([]string, []map[string]string) {
 	var data []map[string]string
 	var keys []string
 
@@ -18,7 +18,7 @@ func ArrayArray2MapArray(slice [][]string) ([]string, []map[string]string) {
 	return keys, data
 }
 
-func ArrayArray2MapMap(slice [][]string, key string) ([]string, map[string]map[string]string) {
+func Slice2MapMap(slice [][]string, key string) ([]string, map[string]map[string]string) {
 	var data = make(map[string]map[string]string)
 	var keys []string
 	for i, row := range slice {
@@ -35,7 +35,7 @@ func ArrayArray2MapMap(slice [][]string, key string) ([]string, map[string]map[s
 	return keys, data
 }
 
-func ArrayArray2MapMapMerge(slice [][]string, key, sep string) ([]string, map[string]map[string]string) {
+func Slice2MapMapMerge(slice [][]string, key, sep string) ([]string, map[string]map[string]string) {
 	var data = make(map[string]map[string]string)
 	var keys []string
 
