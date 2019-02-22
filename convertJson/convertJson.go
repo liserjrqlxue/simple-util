@@ -95,7 +95,7 @@ func main() {
 			fmt.Println("-struct error for tsv")
 			os.Exit(1)
 		}
-		d, err = json.Marshal(i)
+		d, err = json.MarshalIndent(i, "", "\t")
 		simple_util.CheckErr(err)
 		simple_util.Json2file(d, *prefix+".json")
 	case "xlsx":
@@ -109,7 +109,7 @@ func main() {
 			fmt.Println("-struct error for xlsx")
 			os.Exit(1)
 		}
-		d, err = json.Marshal(i)
+		d, err = json.MarshalIndent(i, "", "\t")
 		simple_util.CheckErr(err)
 		simple_util.Json2file(d, *prefix+"."+*sheet+".json")
 	}
