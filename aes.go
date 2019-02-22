@@ -3,6 +3,7 @@ package simple_util
 import (
 	"fmt"
 	"github.com/liserjrqlxue/crypto/aes"
+	"io/ioutil"
 	"os"
 )
 
@@ -20,4 +21,12 @@ func Encode2File(file *os.File, data, codeKey []byte) int {
 	c, err := file.Write(d)
 	CheckErr(err)
 	return c
+}
+
+func File2Decode(fileName string, codeKey []byte) []byte {
+	b, err := ioutil.ReadFile(fileName)
+	CheckErr(err)
+	d, err := AES.Decode(b, codeKey)
+	CheckErr(err)
+	return d
 }
