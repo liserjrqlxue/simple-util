@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/liserjrqlxue/simple-util"
+	"io/ioutil"
 	"os"
 )
 
@@ -17,7 +18,7 @@ var (
 	format = flag.String(
 		"type",
 		"tsv",
-		"file type,[tsv,xlsx]",
+		"file type,[json,tsv,xlsx]",
 	)
 	sep = flag.String(
 		"sep",
@@ -80,6 +81,14 @@ func main() {
 	var d []byte
 	var err error
 	switch *format {
+	case "json":
+		b, err := ioutil.ReadFile(*input)
+		simple_util.CheckErr(err)
+		var v interface{}
+		json.Unmarshal(b, &v)
+		d, err = json.MarshalIndent(v, "", "\t")
+		simple_util.CheckErr(err)
+		simple_util.Json2file(d, *prefix+".new.json")
 	case "tsv":
 		switch *strucType {
 		case "Array":
@@ -113,5 +122,4 @@ func main() {
 		simple_util.CheckErr(err)
 		simple_util.Json2file(d, *prefix+"."+*sheet+".json")
 	}
-
 }
