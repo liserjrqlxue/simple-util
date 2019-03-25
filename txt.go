@@ -2,6 +2,7 @@ package simple_util
 
 import (
 	"bufio"
+	"log"
 	"os"
 	"regexp"
 )
@@ -11,7 +12,7 @@ type MapDb struct {
 	Data  []map[string]string
 }
 
-// reads file to []string
+// read file to []string
 func File2Array(fileName string) []string {
 	file, err := os.Open(fileName)
 	CheckErr(err)
@@ -21,7 +22,7 @@ func File2Array(fileName string) []string {
 	return Scanner2Array(scanner)
 }
 
-// reads file to [][]array
+// read file to [][]array
 func File2Slice(fileName, sep string) [][]string {
 	file, err := os.Open(fileName)
 	CheckErr(err)
@@ -31,7 +32,7 @@ func File2Slice(fileName, sep string) [][]string {
 	return Scanner2Slice(scanner, sep)
 }
 
-// reads file to []map[string]string
+// read file to []map[string]string
 func File2MapArray(fileName, sep string, skip *regexp.Regexp) ([]map[string]string, []string) {
 	file, err := os.Open(fileName)
 	CheckErr(err)
@@ -41,7 +42,31 @@ func File2MapArray(fileName, sep string, skip *regexp.Regexp) ([]map[string]stri
 	return Scanner2MapArray(scanner, sep, skip)
 }
 
-// reads file to map[string]map[string]string
+// read files to []map[string]string
+func Files2MapArray(fileNames []string, sep string, skip *regexp.Regexp) (Data []map[string]string, Title []string) {
+	for _, fileName := range fileNames {
+		data, title := File2MapArray(fileName, sep, skip)
+		for _, item := range data {
+			Data = append(Data, item)
+		}
+		if len(Title) == 0 {
+			Title = title
+		} else {
+			if len(Title) != len(title) {
+				log.Fatal("titles has different columns")
+			} else {
+				for i := 0; i < len(Title); i++ {
+					if Title[i] != title[i] {
+						log.Fatal("titles not equal")
+					}
+				}
+			}
+		}
+	}
+	return
+}
+
+// read file to map[string]map[string]string
 func File2MapMap(fileName, key, sep string) map[string]map[string]string {
 	file, err := os.Open(fileName)
 	CheckErr(err)
@@ -51,7 +76,7 @@ func File2MapMap(fileName, key, sep string) map[string]map[string]string {
 	return Scanner2MapMap(scanner, key, sep)
 }
 
-// reads file to map[string]map[string]string
+// read file to map[string]map[string]string
 func File2MapMapMerge(fileName, key, sep, merge string) map[string]map[string]string {
 	file, err := os.Open(fileName)
 	CheckErr(err)
