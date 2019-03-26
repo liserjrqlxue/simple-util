@@ -1,11 +1,21 @@
 package simple_util
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
 )
+
+// warpper of json.MarshalIndent
+func JsonIndent(v interface{}, prefix, indent string) (b []byte, err error) {
+	b, err = json.MarshalIndent(v, prefix, indent)
+	b = bytes.Replace(b, []byte("\\u003c"), []byte("<"), -1)
+	b = bytes.Replace(b, []byte("\\u003e"), []byte(">"), -1)
+	b = bytes.Replace(b, []byte("\\u0026"), []byte("&"), -1)
+	return
+}
 
 func Json2file(json []byte, filenName string) error {
 	file, err := os.Create(filenName)
