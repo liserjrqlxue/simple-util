@@ -33,6 +33,14 @@ func Json2file(json []byte, filenName string) error {
 	return nil
 }
 
+func Json2File(fileName string, a interface{}) (err error) {
+	b, err := json.MarshalIndent(a, "", "\t")
+	if err != nil {
+		return
+	}
+	return Json2file(b, fileName)
+}
+
 func Json2MapMap(jsonBlob []byte) map[string]map[string]string {
 	var data = make(map[string]map[string]string)
 	err := json.Unmarshal(jsonBlob, &data)
