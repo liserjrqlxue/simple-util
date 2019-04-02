@@ -42,6 +42,16 @@ func File2MapArray(fileName, sep string, skip *regexp.Regexp) ([]map[string]stri
 	return Scanner2MapArray(scanner, sep, skip)
 }
 
+// read file with long line to []map[string]string
+func LongFile2MapArray(fileName, sep string, skip *regexp.Regexp) (mapArray []map[string]string, title []string) {
+	file, err := os.Open(fileName)
+	CheckErr(err)
+	defer DeferClose(file)
+
+	reader := bufio.NewReader(file)
+	return Reader2MapArray(reader, sep, skip)
+}
+
 // read files to []map[string]string
 func Files2MapArray(fileNames []string, sep string, skip *regexp.Regexp) (Data []map[string]string, Title []string) {
 	for _, fileName := range fileNames {
