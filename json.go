@@ -55,6 +55,13 @@ func Json2Map(jsonBlob []byte) map[string]string {
 	return data
 }
 
+func Json2MapInt(jsonBlob []byte) map[string]int {
+	var data = make(map[string]int)
+	err := json.Unmarshal(jsonBlob, &data)
+	CheckErr(err)
+	return data
+}
+
 func JsonFile2MapMap(fileName string) map[string]map[string]string {
 	b, err := ioutil.ReadFile(fileName)
 	CheckErr(err)
