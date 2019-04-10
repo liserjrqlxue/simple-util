@@ -76,6 +76,13 @@ func JsonFile2Map(fileName string) map[string]string {
 	return Json2Map(b)
 }
 
+func JsonFile2MapInt(fileName string) map[string]int {
+	b, err := ioutil.ReadFile(fileName)
+	CheckErr(err)
+	fmt.Printf("load %d byte from %s\n", len(b), fileName)
+	return Json2MapInt(b)
+}
+
 func JsonFile2Interface(fileName string) interface{} {
 	b, err := ioutil.ReadFile(fileName)
 	CheckErr(err)
