@@ -64,7 +64,7 @@ func DownloadFileProgress(filepath, url string) {
 	CheckErr(err)
 	defer resp.Body.Close()
 
-	fmt.Printf("Total size %s of %s\n", humanize.Bytes(uint64(resp.ContentLength)), url)
+	fmt.Printf("Total size %s of %s\n", humanize.IBytes(uint64(resp.ContentLength)), url)
 
 	// Create out progress reporter and pass it to be ued alongside our writer
 	counter := &WriterCounter{}

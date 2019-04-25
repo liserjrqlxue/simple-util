@@ -12,6 +12,14 @@ func CheckErr(err error) {
 	}
 }
 
+// handle error
+func CheckErrs(err error, msg ...string) {
+	if err != nil {
+		//panic(err)
+		log.Fatal(err, msg)
+	}
+}
+
 type handle interface {
 	Close() error
 }
