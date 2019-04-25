@@ -33,10 +33,10 @@ func Json2file(json []byte, filenName string) error {
 	return nil
 }
 
-func Json2File(fileName string, a interface{}) (err error) {
+func Json2File(fileName string, a interface{}) error {
 	b, err := json.MarshalIndent(a, "", "\t")
 	if err != nil {
-		return
+		return err
 	}
 	return Json2file(b, fileName)
 }
