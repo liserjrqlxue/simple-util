@@ -44,7 +44,7 @@ func (wc *WriterCounter) Write(p []byte) (int, error) {
 
 func (wc *WriterCounter) PrintProgress() {
 	// Clear the line by using a character return to go back to teh start an remove the remaining characters by filing it with spaces
-	fmt.Printf("\t%", strings.Repeat(" ", 35))
+	fmt.Printf("\r%s", strings.Repeat(" ", 35))
 
 	// Return again and print current status of download
 	// We use the humanize package to print the bytes in a meaningful way (e.g. 10MB)
@@ -58,14 +58,14 @@ func DownloadFileProgress(filepath, url string) {
 	// but we'll remove the tmp extension once download.
 	out, err := os.Create(filepath + ".tmp")
 	CheckErr(err)
-	defer out.Close()
 
 	// Get the data
 	resp, err := http.Get(url)
 	CheckErr(err)
 	defer resp.Body.Close()
 
-	println(resp.ContentLength)
+	fmt.Printf("Total size %s of %s\n", humanize.Bytes(uint64(resp.ContentLength)), url)
+
 	// Create out progress reporter and pass it to be ued alongside our writer
 	counter := &WriterCounter{}
 	_, err = io.Copy(out, io.TeeReader(resp.Body, counter))
@@ -74,6 +74,7 @@ func DownloadFileProgress(filepath, url string) {
 	// The progress use the same line so print a new line once it's finished downloading
 	fmt.Print("\n")
 
+	out.Close()
 	err = os.Rename(filepath+".tmp", filepath)
 	CheckErr(err)
 }
