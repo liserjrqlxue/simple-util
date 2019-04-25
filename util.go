@@ -5,15 +5,7 @@ import (
 )
 
 // handle error
-func CheckErr(err error) {
-	if err != nil {
-		//panic(err)
-		log.Fatal(err)
-	}
-}
-
-// handle error
-func CheckErrs(err error, msg ...string) {
+func CheckErr(err error, msg ...string) {
 	if err != nil {
 		//panic(err)
 		log.Fatal(err, msg)
