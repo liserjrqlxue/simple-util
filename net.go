@@ -48,7 +48,7 @@ func (wc *WriterCounter) PrintProgress() {
 
 	// Return again and print current status of download
 	// We use the humanize package to print the bytes in a meaningful way (e.g. 10MB)
-	fmt.Println("\rDownloading.. %s complete", humanize.Bytes(wc.Total))
+	fmt.Printf("\rDownloading.. %s complete", humanize.Bytes(wc.Total))
 }
 
 // We pass an io.TeeReader into Copy() to report progress on the download.
