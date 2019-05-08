@@ -70,6 +70,13 @@ func Json2MapInt(jsonBlob []byte) map[string]int {
 	return data
 }
 
+func Json2MapBool(jsonBlob []byte) map[string]bool {
+	var data = make(map[string]bool)
+	err := json.Unmarshal(jsonBlob, &data)
+	CheckErr(err)
+	return data
+}
+
 func JsonFile2MapMap(fileName string) map[string]map[string]string {
 	b, err := ioutil.ReadFile(fileName)
 	CheckErr(err)
@@ -99,4 +106,11 @@ func JsonFile2Interface(fileName string) interface{} {
 	err = json.Unmarshal(b, &data)
 	CheckErr(err)
 	return data
+}
+
+func JsonFile2Data(fileName string, v interface{}) {
+	b, err := ioutil.ReadFile(fileName)
+	CheckErr(err)
+	fmt.Printf("load %d byte from %s\n", len(b), fileName)
+	CheckErr(json.Unmarshal(b, &v))
 }
