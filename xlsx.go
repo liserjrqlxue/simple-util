@@ -39,3 +39,13 @@ func Sheet2MapMapMergeTrim(excelFile, sheetName, key, sep string) ([]string, map
 
 	return Slice2MapMapMergeTrim(rows, key, sep)
 }
+
+func Sheet2MapMapMergeReplace(excelFile, sheetName, key, sep, replace string) ([]string, map[string]map[string]string) {
+
+	xlsxFh, err := excelize.OpenFile(excelFile)
+	CheckErr(err)
+	rows, err := xlsxFh.GetRows(sheetName)
+	CheckErr(err)
+
+	return Slice2MapMapMergeTrim(rows, key, sep)
+}
