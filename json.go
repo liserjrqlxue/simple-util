@@ -80,28 +80,28 @@ func Json2MapBool(jsonBlob []byte) map[string]bool {
 func JsonFile2MapMap(fileName string) map[string]map[string]string {
 	b, err := ioutil.ReadFile(fileName)
 	CheckErr(err)
-	fmt.Printf("load %d byte from %s\n", len(b), fileName)
+	logLoadJson(len(b), fileName)
 	return Json2MapMap(b)
 }
 
 func JsonFile2Map(fileName string) map[string]string {
 	b, err := ioutil.ReadFile(fileName)
 	CheckErr(err)
-	fmt.Printf("load %d byte from %s\n", len(b), fileName)
+	logLoadJson(len(b), fileName)
 	return Json2Map(b)
 }
 
 func JsonFile2MapInt(fileName string) map[string]int {
 	b, err := ioutil.ReadFile(fileName)
 	CheckErr(err)
-	fmt.Printf("load %d byte from %s\n", len(b), fileName)
+	logLoadJson(len(b), fileName)
 	return Json2MapInt(b)
 }
 
 func JsonFile2Interface(fileName string) interface{} {
 	b, err := ioutil.ReadFile(fileName)
 	CheckErr(err)
-	fmt.Printf("load %d byte from %s\n", len(b), fileName)
+	logLoadJson(len(b), fileName)
 	var data interface{}
 	err = json.Unmarshal(b, &data)
 	CheckErr(err)
@@ -111,6 +111,6 @@ func JsonFile2Interface(fileName string) interface{} {
 func JsonFile2Data(fileName string, v interface{}) {
 	b, err := ioutil.ReadFile(fileName)
 	CheckErr(err)
-	fmt.Printf("load %d byte from %s\n", len(b), fileName)
+	logLoadJson(len(b), fileName)
 	CheckErr(json.Unmarshal(b, &v))
 }
