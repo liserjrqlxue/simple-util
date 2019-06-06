@@ -115,7 +115,7 @@ func JsonFile2Interface(fileName string) interface{} {
 	return data
 }
 
-func JsonFile2Data(fileName string, v *interface{}) {
+func JsonFile2Data(fileName string, v interface{}) {
 	b, err := ioutil.ReadFile(fileName)
 	CheckErr(err)
 	logLoadJson(len(b), fileName)
