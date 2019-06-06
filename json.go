@@ -98,6 +98,13 @@ func JsonFile2MapInt(fileName string) map[string]int {
 	return Json2MapInt(b)
 }
 
+func JsonFile2MapBool(fileName string) map[string]bool {
+	b, err := ioutil.ReadFile(fileName)
+	CheckErr(err)
+	logLoadJson(len(b), fileName)
+	return Json2MapBool(b)
+}
+
 func JsonFile2Interface(fileName string) interface{} {
 	b, err := ioutil.ReadFile(fileName)
 	CheckErr(err)
@@ -108,9 +115,9 @@ func JsonFile2Interface(fileName string) interface{} {
 	return data
 }
 
-func JsonFile2Data(fileName string, v interface{}) {
+func JsonFile2Data(fileName string, v *interface{}) {
 	b, err := ioutil.ReadFile(fileName)
 	CheckErr(err)
 	logLoadJson(len(b), fileName)
-	CheckErr(json.Unmarshal(b, &v))
+	CheckErr(json.Unmarshal(b, v))
 }
