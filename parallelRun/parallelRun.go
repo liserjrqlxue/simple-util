@@ -23,6 +23,8 @@ var (
 	)
 )
 
+var fail bool
+
 func main() {
 	log.Printf("Parallel Run Start:%v", os.Args)
 
@@ -54,6 +56,7 @@ func main() {
 			err = simple_util.RunCmd(cmd[0], cmd[1:]...)
 			if err != nil {
 				log.Printf("Task[%5d] Error:%v", i, err)
+				fail = true
 			} else {
 				log.Printf("Task[%5d] Done", i)
 			}
@@ -69,5 +72,9 @@ func main() {
 	for i := 0; i < *threshold; i++ {
 		<-c
 	}
-	log.Printf("Parallel Run Done")
+	if fail {
+		log.Printf("Parallel Run Done With Error")
+	} else {
+		log.Printf("Parallel Run Done")
+	}
 }
