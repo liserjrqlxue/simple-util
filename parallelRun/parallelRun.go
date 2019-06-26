@@ -30,7 +30,7 @@ func main() {
 		log.Print("-list is required")
 		os.Exit(0)
 	}
-	log.Printf("Parallel Run Start:%v", flag.Args())
+	log.Printf("Parallel Run Start:%v", os.Args)
 	var line string
 
 	file, err := os.Open(*list)
