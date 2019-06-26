@@ -73,8 +73,8 @@ func main() {
 		<-c
 	}
 	if fail {
-		log.Printf("Parallel Run Done With Error")
+		log.Fatal("Parallel Run Done With Error")
 	} else {
-		log.Printf("Parallel Run Done")
+		log.Print("Parallel Run Done")
 	}
 }
