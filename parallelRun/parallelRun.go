@@ -24,19 +24,20 @@ var (
 )
 
 func main() {
+	log.Printf("Parallel Run Start:%v", os.Args)
+
 	flag.Parse()
 	if *list == "" {
 		flag.Usage()
 		log.Print("-list is required")
 		os.Exit(0)
 	}
-	log.Printf("Parallel Run Start:%v", os.Args)
-	var line string
 
 	file, err := os.Open(*list)
 	simple_util.CheckErr(err)
 	defer simple_util.DeferClose(file)
 
+	var line string
 	c := make(chan bool, *threshold)
 	reader := bufio.NewReader(file)
 	var i = 0
