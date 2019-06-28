@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -36,6 +37,11 @@ var (
 		"cwd",
 		false,
 		"-cwd for SGE",
+	)
+	threshold = flag.Int(
+		"threshold",
+		12,
+		"threshold for local mode",
 	)
 )
 
@@ -143,11 +149,17 @@ func SGEsubmmit(i int, cmds []string, oldChan <-chan string, newChan chan<- stri
 
 func LocalRun(i int, cmds []string, oldChan <-chan string, newChan chan<- string) {
 	<-oldChan
-	log.Printf("Task[%5d] Start:%v", i, cmds)
-	log.Print("bash ", strings.Join(cmds, " "))
-	err := simple_util.RunCmd("bash", cmds...)
-	if err != nil {
-		log.Fatalf("Error:%v", err)
+	log.Printf("Task[%04d] Start:%v", i, cmds)
+	var cmdSlice [][]string
+	for _, cmd := range strings.Split(cmds[0], ",") {
+		var cmdline []string
+		cmdline = append(cmdline, cmd)
+		cmdline = append(cmdline, cmds[1:]...)
+		cmdSlice = append(cmdSlice, cmdline)
+	}
+	ok := simple_util.ParallelRun(cmdSlice, *threshold, strconv.Itoa(i))
+	if !ok {
+		log.Fatalf("Task[%04d] Run and Stop", i)
 	}
 	newChan <- ""
 	return

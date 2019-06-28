@@ -15,13 +15,13 @@ func RunCmd(name string, args ...string) error {
 }
 
 func RunTask(c <-chan bool, cmd []string, task string, index int, ok *bool) {
-	log.Printf("Task[%s%5d] Start:%v", task, index, cmd)
+	log.Printf("Task[%s.%04d] Start:%v", task, index, cmd)
 	err := RunCmd(cmd[0], cmd[1:]...)
 	if err != nil {
-		log.Printf("Task[%s%5d] Error:%v", task, index, err)
+		log.Printf("Task[%s.%04d] Error:%v", task, index, err)
 		*ok = false
 	} else {
-		log.Printf("Task[%s%5d] Done", task, index)
+		log.Printf("Task[%s.%04d] Done", task, index)
 	}
 	<-c
 }
