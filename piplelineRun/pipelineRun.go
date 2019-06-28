@@ -52,9 +52,10 @@ func main() {
 	defer simple_util.DeferClose(file)
 
 	var line string
-	c := make(chan string)
+	firstChan := make(chan string)
+	oldChan := make(chan string)
+	oldChan = firstChan
 	reader := bufio.NewReader(file)
-	c <- ""
 	var i = 0
 	for {
 		line, err = reader.ReadString('\n')
@@ -69,21 +70,21 @@ func main() {
 		case "local":
 			err = simple_util.RunCmd("bash", cmd[0])
 		case "sge":
-			var hjid = <-c
-			hjid, err = SGEsubmmit(cmd[0], hjid, appendArgs, cmd[1:])
-			if err != nil {
-				log.Fatalf("Error: %v", err)
-			}
-			c <- hjid
+			newChan := make(chan string)
+			go SGEsubmmit(cmd[0], oldChan, newChan, appendArgs, cmd[1:])
+			oldChan = newChan
 		default:
 			log.Printf("Error Mode:[%s]", *mode)
 		}
 	}
+	firstChan <- ""
+	<-oldChan
 }
 
 var jobSubmitted = regexp.MustCompile(`^Your job (\d+) \("\S+"\) has been submiited$`)
 
-func SGEsubmmit(script, hjid string, submitArgs, scriptArgs []string) (jid string, error error) {
+func SGEsubmmit(script string, oldChan <-chan string, newChan chan<- string, submitArgs, scriptArgs []string) (error error) {
+	hjid := <-oldChan
 	if hjid != "" {
 		submitArgs = append(submitArgs, "-hold_jid", hjid)
 	}
@@ -92,13 +93,15 @@ func SGEsubmmit(script, hjid string, submitArgs, scriptArgs []string) (jid strin
 	c := exec.Command("qsub", args...)
 	submitLog, err := c.CombinedOutput()
 	if err != nil {
-		log.Printf("Error:%v %v", submitLog, err)
+		log.Fatalf("Error:%v %v", submitLog, err)
+		newChan <- ""
 		return
 	}
 	// Your job (\d+) \("script"\) has been submitted
 	submitLogs := jobSubmitted.FindSubmatch(submitLog)
 	log.Printf("%+v", submitLog)
 	log.Printf("%+v", submitLogs)
-	jid = string(submitLogs[1])
+	jid := string(submitLogs[1])
+	newChan <- jid
 	return
 }
