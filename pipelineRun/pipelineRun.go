@@ -19,7 +19,7 @@ var (
 	)
 	queue = flag.String(
 		"queue",
-		"",
+		"bc_b2c.q",
 		"queue for SGE(-q)",
 	)
 	mode = flag.String(
@@ -30,7 +30,7 @@ var (
 	list = flag.String(
 		"list",
 		"",
-		"script list to pipeline run:\nlocal\t:script\targs\nsge\t:script\tsubmitArgs",
+		"script list to pipeline run:\nlocal\t:script\targs\nsge\t:scripts\tsubmitArgs",
 	)
 	cwd = flag.Bool(
 		"cwd",
@@ -100,14 +100,11 @@ func main() {
 
 var sgeJobId = regexp.MustCompile(`^Your job (\d+) \("\S+"\) has been submitted\n$`)
 
-func SGEsubmmit(i int, cmds []string, oldChan <-chan string, newChan chan<- string, submitArgs []string) {
-	hjid := <-oldChan
-	log.Printf("Task[%5d] Start:%v", i, cmds)
+func submit(script, hjid string, submitArgs []string) (jid string) {
 	if hjid != "" {
 		submitArgs = append(submitArgs, "-hold_jid", hjid)
 	}
-	args := append(submitArgs, cmds[1:]...)
-	args = append(args, cmds[0])
+	args := append(submitArgs, script)
 	c := exec.Command("qsub", args...)
 	log.Print("qsub ", strings.Join(args, " "))
 	submitLogBytes, err := c.CombinedOutput()
@@ -119,11 +116,28 @@ func SGEsubmmit(i int, cmds []string, oldChan <-chan string, newChan chan<- stri
 	log.Print(submitLog)
 	submitLogs := sgeJobId.FindStringSubmatch(submitLog)
 	if len(submitLogs) == 2 {
-		jid := string(submitLogs[1])
-		newChan <- jid
+		jid = string(submitLogs[1])
 	} else {
 		log.Fatalf("Error: jid parse error:%s->%+v", submitLog, submitLogs)
 	}
+	return
+}
+
+func SGEsubmmit(i int, cmds []string, oldChan <-chan string, newChan chan<- string, submitArgs []string) {
+	hjid := <-oldChan
+	log.Printf("Task[%5d] Start:%v", i, cmds)
+
+	args := append(submitArgs, cmds[1:]...)
+	var jids []string
+	for j, cmd := range strings.Split(cmds[0], ",") {
+		log.Printf("submit Task[%5d].%d:%s", j, cmd)
+		jid := submit(cmd, hjid, args)
+		if jid != "" {
+			jids = append(jids, jid)
+		}
+	}
+
+	newChan <- strings.Join(jids, ",")
 	return
 }
 
