@@ -153,7 +153,7 @@ func LocalRun(i int, cmds []string, oldChan <-chan string, newChan chan<- string
 	var cmdSlice [][]string
 	for _, cmd := range strings.Split(cmds[0], ",") {
 		var cmdline []string
-		cmdline = append(cmdline, cmd)
+		cmdline = append(cmdline, "bash", cmd)
 		cmdline = append(cmdline, cmds[1:]...)
 		cmdSlice = append(cmdSlice, cmdline)
 	}
