@@ -30,13 +30,17 @@ var (
 	list = flag.String(
 		"list",
 		"",
-		"script list to pipeline run:\n\t(split by tab)\nlocal\t:script\targs\nsge\t:script\tsubmitArgs",
+		"script list to pipeline run:\nlocal\t:script\targs\nsge\t:script\tsubmitArgs",
 	)
 	cwd = flag.Bool(
 		"cwd",
 		false,
 		"-cwd for SGE",
 	)
+)
+
+var (
+	sep = regexp.MustCompile(`\s+`)
 )
 
 func main() {
@@ -77,7 +81,7 @@ func main() {
 		}
 		i++
 		line = strings.TrimSuffix(line, "\n")
-		cmds := strings.Split(line, "\t")
+		cmds := sep.Split(line, -1)
 
 		newChan := make(chan string)
 		switch *mode {
