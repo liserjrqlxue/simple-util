@@ -30,7 +30,7 @@ var (
 	list = flag.String(
 		"list",
 		"",
-		"script list to pipeline run:\nlocal:script args\nsge:script submitArgs",
+		"script list to pipeline run:\n\t(split by tab)\nlocal\t:script\targs\nsge\t:script\tsubmitArgs",
 	)
 	cwd = flag.Bool(
 		"cwd",
@@ -43,6 +43,11 @@ func main() {
 	log.Printf("Pipeline Run Start:%v", os.Args)
 
 	flag.Parse()
+	if *list == "" {
+		flag.Usage()
+		log.Print("-list is required")
+		os.Exit(0)
+	}
 
 	var submitArgs []string
 	if *cwd {
