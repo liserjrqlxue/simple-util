@@ -24,7 +24,7 @@ var (
 	)
 	mode = flag.String(
 		"mode",
-		"sge",
+		"local",
 		"run mode:[local|sge]",
 	)
 	list = flag.String(
@@ -66,16 +66,16 @@ func main() {
 		line = strings.TrimSuffix(line, "\n")
 		cmd := strings.Split(line, "\t")
 		log.Printf("Task[%5d] Start:%v", i, cmd)
+		newChan := make(chan string)
 		switch *mode {
 		case "local":
-			err = simple_util.RunCmd("bash", cmd[0])
+			go LocalRun(cmd[0], oldChan, newChan, cmd[1:])
 		case "sge":
-			newChan := make(chan string)
 			go SGEsubmmit(cmd[0], oldChan, newChan, appendArgs, cmd[1:])
-			oldChan = newChan
 		default:
 			log.Printf("Error Mode:[%s]", *mode)
 		}
+		oldChan = newChan
 	}
 	firstChan <- ""
 	log.Printf("last job[%s] submitted\n", <-oldChan)
@@ -83,7 +83,7 @@ func main() {
 
 var sgeJobId = regexp.MustCompile(`^Your job (\d+) \("\S+"\) has been submitted\n$`)
 
-func SGEsubmmit(script string, oldChan <-chan string, newChan chan<- string, submitArgs, scriptArgs []string) (error error) {
+func SGEsubmmit(script string, oldChan <-chan string, newChan chan<- string, submitArgs, scriptArgs []string) {
 	hjid := <-oldChan
 	if hjid != "" {
 		submitArgs = append(submitArgs, "-hold_jid", hjid)
@@ -95,8 +95,6 @@ func SGEsubmmit(script string, oldChan <-chan string, newChan chan<- string, sub
 	submitLogBytes, err := c.CombinedOutput()
 	if err != nil {
 		log.Fatalf("Error:%v %v", submitLogBytes, err)
-		newChan <- ""
-		return
 	}
 	// Your job (\d+) \("script"\) has been submitted
 	submitLog := string(submitLogBytes)
@@ -108,5 +106,18 @@ func SGEsubmmit(script string, oldChan <-chan string, newChan chan<- string, sub
 	} else {
 		log.Fatalf("Error: jid parse error:%s->%+v", submitLog, submitLogs)
 	}
+	return
+}
+
+func LocalRun(script string, oldChan <-chan string, newChan chan<- string, scriptArgs []string) {
+	<-oldChan
+	var args = []string{script}
+	args = append(args, scriptArgs...)
+	log.Print("bash ", strings.Join(args, " "))
+	err := simple_util.RunCmd("bash", args...)
+	if err != nil {
+		log.Fatalf("Error:%v", err)
+	}
+	newChan <- ""
 	return
 }
