@@ -32,6 +32,11 @@ var (
 		"",
 		"script list to pipeline run",
 	)
+	cwd = flag.Bool(
+		"cwd",
+		false,
+		"-cwd for SGE",
+	)
 )
 
 func main() {
@@ -39,12 +44,15 @@ func main() {
 
 	flag.Parse()
 
-	var appendArgs = []string{"-cwd"}
+	var submitArgs []string
+	if *cwd {
+		submitArgs = append(submitArgs, "-cwd")
+	}
 	if *queue != "" {
-		appendArgs = append(appendArgs, "-q", *queue)
+		submitArgs = append(submitArgs, "-q", *queue)
 	}
 	if *proj != "" {
-		appendArgs = append(appendArgs, "-P", *proj)
+		submitArgs = append(submitArgs, "-P", *proj)
 	}
 
 	file, err := os.Open(*list)
@@ -64,14 +72,14 @@ func main() {
 		}
 		i++
 		line = strings.TrimSuffix(line, "\n")
-		cmd := strings.Split(line, "\t")
-		log.Printf("Task[%5d] Start:%v", i, cmd)
+		cmds := strings.Split(line, "\t")
+
 		newChan := make(chan string)
 		switch *mode {
 		case "local":
-			go LocalRun(cmd[0], oldChan, newChan, cmd[1:])
+			go LocalRun(i, cmds, oldChan, newChan)
 		case "sge":
-			go SGEsubmmit(cmd[0], oldChan, newChan, appendArgs, cmd[1:])
+			go SGEsubmmit(i, cmds, oldChan, newChan, submitArgs)
 		default:
 			log.Printf("Error Mode:[%s]", *mode)
 		}
@@ -83,21 +91,22 @@ func main() {
 
 var sgeJobId = regexp.MustCompile(`^Your job (\d+) \("\S+"\) has been submitted\n$`)
 
-func SGEsubmmit(script string, oldChan <-chan string, newChan chan<- string, submitArgs, scriptArgs []string) {
+func SGEsubmmit(i int, cmds []string, oldChan <-chan string, newChan chan<- string, submitArgs []string) {
 	hjid := <-oldChan
+	log.Printf("Task[%5d] Start:%v", i, cmds)
 	if hjid != "" {
 		submitArgs = append(submitArgs, "-hold_jid", hjid)
 	}
-	args := append(submitArgs, script)
-	args = append(args, scriptArgs...)
+	args := append(submitArgs, cmds[0])
+	args = append(args, cmds[1:]...)
 	c := exec.Command("qsub", args...)
 	log.Print("qsub ", strings.Join(args, " "))
 	submitLogBytes, err := c.CombinedOutput()
+	submitLog := string(submitLogBytes)
 	if err != nil {
-		log.Fatalf("Error:%v %v", submitLogBytes, err)
+		log.Fatalf("Error:%v:[%v]", err, submitLog)
 	}
 	// Your job (\d+) \("script"\) has been submitted
-	submitLog := string(submitLogBytes)
 	log.Print(submitLog)
 	submitLogs := sgeJobId.FindStringSubmatch(submitLog)
 	if len(submitLogs) == 2 {
@@ -109,12 +118,11 @@ func SGEsubmmit(script string, oldChan <-chan string, newChan chan<- string, sub
 	return
 }
 
-func LocalRun(script string, oldChan <-chan string, newChan chan<- string, scriptArgs []string) {
+func LocalRun(i int, cmds []string, oldChan <-chan string, newChan chan<- string) {
 	<-oldChan
-	var args = []string{script}
-	args = append(args, scriptArgs...)
-	log.Print("bash ", strings.Join(args, " "))
-	err := simple_util.RunCmd("bash", args...)
+	log.Printf("Task[%5d] Start:%v", i, cmds)
+	log.Print("bash ", strings.Join(cmds, " "))
+	err := simple_util.RunCmd("bash", cmds...)
 	if err != nil {
 		log.Fatalf("Error:%v", err)
 	}
