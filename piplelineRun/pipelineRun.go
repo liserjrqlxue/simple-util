@@ -78,10 +78,10 @@ func main() {
 		}
 	}
 	firstChan <- ""
-	<-oldChan
+	log.Printf("last job[%s] submitted\n", <-oldChan)
 }
 
-var jobSubmitted = regexp.MustCompile(`^Your job (\d+) \("\S+"\) has been submiited$`)
+var sgeJobId = regexp.MustCompile(`^Your job (\d+) \("\S+"\) has been submitted\n$`)
 
 func SGEsubmmit(script string, oldChan <-chan string, newChan chan<- string, submitArgs, scriptArgs []string) (error error) {
 	hjid := <-oldChan
@@ -91,17 +91,22 @@ func SGEsubmmit(script string, oldChan <-chan string, newChan chan<- string, sub
 	args := append(submitArgs, script)
 	args = append(args, scriptArgs...)
 	c := exec.Command("qsub", args...)
-	submitLog, err := c.CombinedOutput()
+	log.Print("qsub ", strings.Join(args, " "))
+	submitLogBytes, err := c.CombinedOutput()
 	if err != nil {
-		log.Fatalf("Error:%v %v", submitLog, err)
+		log.Fatalf("Error:%v %v", submitLogBytes, err)
 		newChan <- ""
 		return
 	}
 	// Your job (\d+) \("script"\) has been submitted
-	submitLogs := jobSubmitted.FindSubmatch(submitLog)
-	log.Printf("%+v", submitLog)
-	log.Printf("%+v", submitLogs)
-	jid := string(submitLogs[1])
-	newChan <- jid
+	submitLog := string(submitLogBytes)
+	log.Print(submitLog)
+	submitLogs := sgeJobId.FindStringSubmatch(submitLog)
+	if len(submitLogs) == 2 {
+		jid := string(submitLogs[1])
+		newChan <- jid
+	} else {
+		log.Fatalf("Error: jid parse error:%s->%+v", submitLog, submitLogs)
+	}
 	return
 }
