@@ -30,7 +30,7 @@ var (
 	list = flag.String(
 		"list",
 		"",
-		"script list to pipeline run",
+		"script list to pipeline run:\nlocal:script args\nsge:script submitArgs",
 	)
 	cwd = flag.Bool(
 		"cwd",
@@ -97,8 +97,8 @@ func SGEsubmmit(i int, cmds []string, oldChan <-chan string, newChan chan<- stri
 	if hjid != "" {
 		submitArgs = append(submitArgs, "-hold_jid", hjid)
 	}
-	args := append(submitArgs, cmds[0])
-	args = append(args, cmds[1:]...)
+	args := append(submitArgs, cmds[1:]...)
+	args = append(args, cmds[0])
 	c := exec.Command("qsub", args...)
 	log.Print("qsub ", strings.Join(args, " "))
 	submitLogBytes, err := c.CombinedOutput()
