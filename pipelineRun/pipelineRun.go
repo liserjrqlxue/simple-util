@@ -20,7 +20,7 @@ var (
 	)
 	queue = flag.String(
 		"queue",
-		"bc_b2c.q",
+		"bc_b2c_rd.q",
 		"queue for SGE(-q)",
 	)
 	mode = flag.String(
