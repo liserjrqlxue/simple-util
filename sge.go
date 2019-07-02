@@ -14,16 +14,8 @@ func SGEsubmmit(i int, cmds []string, oldChan <-chan string, newChan chan<- stri
 	log.Printf("Task[%5d] Start:%v", i, cmds)
 
 	args := append(submitArgs, cmds[1:]...)
-	var jids []string
-	for j, cmd := range strings.Split(cmds[0], ",") {
-		log.Printf("submit Task[%5d].%d:%s", i, j, cmd)
-		jid := submit(cmd, hjid, args)
-		if jid != "" {
-			jids = append(jids, jid)
-		}
-	}
-
-	newChan <- strings.Join(jids, ",")
+	jid := submit(cmds[0], hjid, args)
+	newChan <- jid
 	return
 }
 
