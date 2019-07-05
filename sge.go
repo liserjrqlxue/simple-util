@@ -9,8 +9,7 @@ import (
 
 var sgeJobId = regexp.MustCompile(`^Your job (\d+) \("\S+"\) has been submitted\n$`)
 
-func SGEsubmmit(i int, cmds []string, oldChan <-chan string, newChan chan<- string, submitArgs []string) {
-	hjid := <-oldChan
+func SGEsubmit(i int, cmds []string, hjid string, submitArgs []string) string {
 	log.Printf("Task[%5d] Start:%v", i, cmds)
 
 	args := append(submitArgs, cmds[1:]...)
@@ -23,8 +22,7 @@ func SGEsubmmit(i int, cmds []string, oldChan <-chan string, newChan chan<- stri
 		}
 	}
 
-	newChan <- strings.Join(jids, ",")
-	return
+	return strings.Join(jids, ",")
 }
 
 func submit(script, hjid string, submitArgs []string) (jid string) {
