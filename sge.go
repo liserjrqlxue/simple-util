@@ -9,9 +9,7 @@ import (
 
 var sgeJobId = regexp.MustCompile(`^Your job (\d+) \("\S+"\) has been submitted\n$`)
 
-func SGEsubmit(i int, cmds []string, hjid string, submitArgs []string) string {
-	log.Printf("Task[%5d] Start:%v", i, cmds)
-
+func SGEsubmit(cmds []string, hjid string, submitArgs []string) string {
 	args := append(submitArgs, cmds[1:]...)
 	jid := submit(cmds[0], hjid, args)
 	return jid
@@ -23,7 +21,7 @@ func submit(script, hjid string, submitArgs []string) (jid string) {
 	}
 	args := append(submitArgs, script)
 	c := exec.Command("qsub", args...)
-	log.Print("qsub ", strings.Join(args, " "))
+	log.Print("qsub [", strings.Join(args, "] ["))
 	submitLogBytes, err := c.CombinedOutput()
 	submitLog := string(submitLogBytes)
 	if err != nil {
