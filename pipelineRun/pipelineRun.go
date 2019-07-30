@@ -46,7 +46,8 @@ var (
 )
 
 var (
-	sep = regexp.MustCompile(`\s+`)
+	sep  = regexp.MustCompile(`\s+`)
+	skip = regexp.MustCompile(`^#`)
 )
 
 func main() {
@@ -87,6 +88,10 @@ func main() {
 		}
 		i++
 		line = strings.TrimSuffix(line, "\n")
+		if skip.MatchString(line) {
+			log.Printf("skip %d[%s]", i, line)
+			continue
+		}
 		cmds := sep.Split(line, -1)
 
 		newChan := make(chan string)
@@ -101,7 +106,7 @@ func main() {
 		oldChan = newChan
 	}
 	firstChan <- ""
-	log.Printf("last job[%s] submitted\n", <-oldChan)
+	log.Printf("last job[%s] submitted or finish\n", <-oldChan)
 }
 
 var sgeJobId = regexp.MustCompile(`^Your job (\d+) \("\S+"\) has been submitted\n$`)

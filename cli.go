@@ -40,9 +40,9 @@ func ParallelRun(cmds [][]string, threshold int, tag string) (ok bool) {
 		<-c
 	}
 	if ok {
-		log.Print("Parallel Run Done With Error")
-	} else {
 		log.Print("Parallel Run Done")
+	} else {
+		log.Print("Parallel Run Done With Error")
 	}
 	return
 }
