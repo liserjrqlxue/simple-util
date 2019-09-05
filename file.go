@@ -35,3 +35,30 @@ func CopyFile(dst, src string) (err error) {
 	log.Printf("CopyFile %d bytes[%s -> %s]", n, src, dst)
 	return w.Sync()
 }
+
+func Symlink(source, dest string) error {
+	_, err := os.Stat(dest)
+	if err == nil {
+		readLink, err := os.Readlink(dest)
+		if err != nil {
+			log.Printf("%v\n", err)
+		}
+		if readLink != source {
+			log.Printf("dest is not symlink of source:[%s]->[%s]vs[%s]\n", dest, readLink, source)
+			err = os.Symlink(source, dest)
+			if err != nil {
+				log.Printf("%v\n", err)
+			}
+		} else {
+			log.Printf("dest is symlink of source:[%s]->[%s]", dest, readLink)
+		}
+	} else if os.IsNotExist(err) {
+		err = os.Symlink(source, dest)
+		if err != nil {
+			log.Printf("Error: Symlink[%s->%s] err:%v", source, dest, err)
+		}
+	} else {
+		log.Printf("Error: dest[%s] stat err:%v", dest, err)
+	}
+	return nil
+}
