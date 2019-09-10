@@ -2,6 +2,7 @@ package simple_util
 
 import (
 	"bufio"
+	"errors"
 	"log"
 	"os"
 	"regexp"
@@ -119,4 +120,26 @@ func File2MapMapMerge(fileName, key, sep, merge string) map[string]map[string]st
 	scanner := bufio.NewScanner(file)
 	_, d := Slice2MapMapMerge(Scanner2Slice(scanner, sep), key, merge)
 	return d
+}
+
+// read two column file to map[string]string
+func File2Map(fileName, sep string, override bool) (db map[string]string, err error) {
+	db = make(map[string]string)
+	file, err := os.Open(fileName)
+	if err != nil {
+		return db, err
+	}
+	defer DeferClose(file)
+
+	scanner := bufio.NewScanner(file)
+	slice := Scanner2Slice(scanner, sep)
+	for _, kv := range slice {
+		kv = append(kv, "NA", "NA")
+		v, ok := db[kv[0]]
+		if ok && v != kv[1] && !override {
+			err = errors.New("dup key[" + kv[0] + "],different value:[" + v + "," + kv[1] + "]")
+		}
+		db[kv[0]] = kv[1]
+	}
+	return
 }
