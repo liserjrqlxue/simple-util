@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"regexp"
+	"strings"
 )
 
 type MapDb struct {
@@ -140,6 +141,20 @@ func File2Map(fileName, sep string, override bool) (db map[string]string, err er
 			err = errors.New("dup key[" + kv[0] + "],different value:[" + v + "," + kv[1] + "]")
 		}
 		db[kv[0]] = kv[1]
+	}
+	return
+}
+
+// read two column file to map[string]string
+func Files2Map(fileNames, sep string, override bool) (db map[string]string, err error) {
+	db = make(map[string]string)
+	fileList := strings.Split(fileNames, ",")
+	for _, fileName := range fileList {
+		db1, err := File2Map(fileName, sep, override)
+		CheckErr(err)
+		for k, v := range db1 {
+			db[k] = v
+		}
 	}
 	return
 }
