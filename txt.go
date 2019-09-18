@@ -150,10 +150,12 @@ func Files2Map(fileNames, sep string, override bool) (db map[string]string, err 
 	db = make(map[string]string)
 	fileList := strings.Split(fileNames, ",")
 	for _, fileName := range fileList {
-		db1, err := File2Map(fileName, sep, override)
-		CheckErr(err)
+		db1, err1 := File2Map(fileName, sep, override)
 		for k, v := range db1 {
 			db[k] = v
+		}
+		if err1 != nil {
+			err = err1
 		}
 	}
 	return
