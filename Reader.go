@@ -16,6 +16,9 @@ func Reader2MapArray(reader *bufio.Reader, sep string, skip *regexp.Regexp) (map
 			continue
 		}
 		line = strings.TrimSuffix(line, "\n")
+		if line == "" && err != nil {
+			break
+		}
 		array := strings.Split(line, sep)
 		if i == 0 {
 			title = array
