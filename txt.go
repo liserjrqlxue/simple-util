@@ -3,6 +3,7 @@ package simple_util
 import (
 	"bufio"
 	"errors"
+	"fmt"
 	"log"
 	"os"
 	"regexp"
@@ -12,6 +13,16 @@ import (
 type MapDb struct {
 	Title []string
 	Data  []map[string]string
+}
+
+// write []string to file
+func Array2File(fileName, sep string, array []string) {
+	file, err := os.Create(fileName)
+	CheckErr(err)
+	defer DeferClose(file)
+
+	n, err := fmt.Fprintln(file, strings.Join(array, sep))
+	fmt.Printf("write %d byte to %s\n", n, fileName)
 }
 
 // read file to []string
