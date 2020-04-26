@@ -26,26 +26,32 @@ func Scanner2Slice(scanner *bufio.Scanner, sep string) [][]string {
 	return slice
 }
 
+func ScanTitle(scanner *bufio.Scanner, sep string, skip *regexp.Regexp) (title []string) {
+	for scanner.Scan() {
+		line := scanner.Text()
+		if skip != nil && skip.MatchString(line) {
+			continue
+		}
+		title = strings.Split(line, sep)
+	}
+	CheckErr(scanner.Err())
+	return
+}
+
 func Scanner2MapArray(scanner *bufio.Scanner, sep string, skip *regexp.Regexp) ([]map[string]string, []string) {
 	var mapArray []map[string]string
-	var title []string
-	var i = 0
+	var title = ScanTitle(scanner, sep, skip)
 	for scanner.Scan() {
 		line := scanner.Text()
 		if skip != nil && skip.MatchString(line) {
 			continue
 		}
 		array := strings.Split(line, sep)
-		if i == 0 {
-			title = array
-		} else {
-			var dataHash = make(map[string]string)
-			for j, k := range array {
-				dataHash[title[j]] = k
-			}
-			mapArray = append(mapArray, dataHash)
+		var dataHash = make(map[string]string)
+		for j, k := range array {
+			dataHash[title[j]] = k
 		}
-		i++
+		mapArray = append(mapArray, dataHash)
 	}
 	CheckErr(scanner.Err())
 	return mapArray, title
