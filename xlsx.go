@@ -1,6 +1,8 @@
 package simple_util
 
-import "github.com/360EntSecGroup-Skylar/excelize/v2"
+import (
+	"github.com/xuri/excelize/v2"
+)
 
 func Sheet2MapArray(excelFile, sheetName string) ([]string, []map[string]string) {
 	xlsxFh, err := excelize.OpenFile(excelFile)
